@@ -1,8 +1,12 @@
 // TODO: Winther saiz: To use actual Kinect data, un-comment the following "import..." line, and rename the dummy "KinectPV2" class in here to something else (like "KinectPV2Temp")
+<<<<<<< Updated upstream
 //import KinectPV2.*;
 
 import processing.sound.*;
 
+=======
+import KinectPV2.*;
+>>>>>>> Stashed changes
 KinectPV2 kinect;
 
 FFT fft;
@@ -26,6 +30,7 @@ static final float nearView = 500f;
 static final float farView = 1500f;
 
 // Winther saiz: Dummy class, quick fix hack... HACK! HACK!! HACK!!! // TODO: Find a better way to fix things in the absence of a real Kinect
+<<<<<<< Updated upstream
 public class KinectPV2 {
   static final int WIDTHDepth = 320;
   static final int HEIGHTDepth = 240;
@@ -67,10 +72,53 @@ public class KinectPV2 {
     return res;
   }
 }
+=======
+//public class KinectPV2 {
+//  static final int WIDTHDepth = 320;
+//  static final int HEIGHTDepth = 240;
+//  int ticks;
+//  KinectPV2(Object _) {
+//  }
+//  void enableDepthImg(boolean _) {
+//  }
+//  void enablePointCloud(boolean _) {
+//  }
+//  void enableInfraredImg(boolean _) {
+//  }
+//  void init() {
+//    ticks = 0;
+//  }
+//  int[] getRawDepthData() {
+//    int[] res = new int[WIDTHDepth*HEIGHTDepth];
+//    double ocx = .5d;
+//    double ocy = .5d;
+//    double odia = .85d;
+//    int pulse = 100;
+//    double t = (double)(ticks++%pulse)*2d/(pulse-1)-1d;
+
+//    odia -= .85d*t*t;
+
+//    for (int y = 0; y < HEIGHTDepth; y++) {
+//      for (int x = 0; x < WIDTHDepth; x++) {
+//        double ax = 2d * ((((double)x+.5d) / WIDTHDepth) - ocx);
+//        double ay = 2d * ((((double)y+.5d) / HEIGHTDepth) - ocy);
+//        int d = (int)Math.round(1200*(odia - (ax*ax+ay*ay))/.85d);
+//        if (d > 0) {
+//          res[x+y*WIDTHDepth] = 1500-d;
+//        } else {
+//          res[x+y*WIDTHDepth] = 0;
+//        }
+//      }
+//    }
+
+//    return res;
+//  }
+//}
+>>>>>>> Stashed changes
 
 void setup() {
-  //fullScreen(P3D);
-  size(640, 480);
+  fullScreen();
+  //size(640, 480);
   //size(640, 480, P3D);
   kinect = new KinectPV2(this);
 
@@ -84,6 +132,7 @@ void setup() {
 
   //trackColor = color(255, 0, 150);
 
+<<<<<<< Updated upstream
   colorMode(HSB, 1f);
 
   // Create an Input stream which is routed into the Amplitude analyzer
@@ -95,9 +144,21 @@ void setup() {
   
   // patch the AudioIn
   fft.input(in);
+=======
+/*
+int x = 1;
+long y = 1L;
+float a = 1f;
+double b = 1d;
+*/
+  colorMode(HSB, 1f); //<>//
+>>>>>>> Stashed changes
 }
 
 void draw() {
+  final float near = 300f;
+  final float far = 1500f;
+  
   int[] depth = kinect.getRawDepthData();
   //scale(0.5);
   loadPixels();
@@ -119,15 +180,24 @@ void draw() {
        double wy = ky % 1d;
        int i = (int)Math.floor(kx) + (int)Math.floor(ky) * KinectPV2.WIDTHDepth;
        int d = depth[i];
+<<<<<<< Updated upstream
        /** Interpolering:
+=======
+       /** Interpolation:
+>>>>>>> Stashed changes
        int d = (int)Math.round((i+1)%KinectPV2.WIDTHDepth > 0 ? 
        (((i/KinectPV2.WIDTHDepth)+1)%KinectPV2.HEIGHTDepth > 0 ?
        (1d-wy)*((1d-wx)*depth[i]+wx*depth[i+1])+wy*((1d-wx)*depth[i+KinectPV2.WIDTHDepth]+wx*depth[i+KinectPV2.WIDTHDepth+1]) :
        (1d-wx)*depth[i]+wx*depth[i+1]) :
        (((i/KinectPV2.WIDTHDepth)+1)%KinectPV2.HEIGHTDepth > 0 ? (1d-wy)*depth[i]+wy*depth[i+KinectPV2.WIDTHDepth] : depth[i]));
        */
+<<<<<<< Updated upstream
        if (d>=nearView && d<farView) {
        pixels[x+y*width] = color(((float)d-nearView)/(farView-nearView), .5f, .5f);
+=======
+       if (d>=near && d<far) {
+       pixels[x+y*width] = color(((float)d-near)/(far-near), .5f, .5f);
+>>>>>>> Stashed changes
        } else {
        pixels[x+y*width] = color(0);
        }
