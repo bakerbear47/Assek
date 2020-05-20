@@ -5,24 +5,24 @@ PGraphics pg;
 
 int blobCounter = 0;
 
+int maxLife = 10;
+
+//int id = 0;
+
 PImage img;
 
 color trackColor;
 
-float distThreshold = 25;
+float distThreshold = 300;
 
 
 ArrayList<Blob> blobs = new ArrayList<Blob>();
 
-//for (Blob b : blobs){
-//  b= new Blob()
-
-//}
 
 void setup() {
-  
-  
- fullScreen(P2D);
+
+
+  fullScreen(P2D);
   //size(800, 600, P3D);
   kinect = new KinectPV2(this);
 
@@ -36,7 +36,7 @@ void setup() {
   //img = createImage(width, height, RGB);
 
   trackColor = color(255, 0, 150);
-  
+
   pg = createGraphics(width, height);
 }
 
@@ -45,7 +45,7 @@ void draw() {
   final float near = 300f;
   final float far = 1500f;
 
-pg.beginDraw();
+  pg.beginDraw();
 
   pg.loadPixels();
 
@@ -54,6 +54,7 @@ pg.beginDraw();
 
   //blobs.clear();
   ArrayList<Blob> currentBlobs = new ArrayList<Blob>();
+  
 
   for (int x = 0; x < width; x++ ) {
     for (int y = 0; y < height; y++ ) {
@@ -61,12 +62,14 @@ pg.beginDraw();
       double ky = ((double)y/height) * KinectPV2.HEIGHTDepth;
       int offset = (int)Math.floor(kx) + (int)Math.floor(ky) * KinectPV2.WIDTHDepth;
       int d = depth[offset];
+      
 
       if (d>near && d<far) {
 
         pg.pixels[x+y*width] = trackColor;
 
         boolean found = false;
+        
         for (Blob b : currentBlobs) {
           if (b.isNear(x, y)) {
             b.add(x, y);
@@ -79,21 +82,26 @@ pg.beginDraw();
           Blob b = new Blob(x, y);
           currentBlobs.add(b);
         }
-      } else {
+      }
+      else if (blobs.size()==1  ) {
         colorMode(HSB);
         int sum = 0;
-        for(Blob b : blobs){
-        float distOut = dist(x, y, b.getCenter().x, b.getCenter().y);
-        sum += 100 * random(140,400)/distOut;
+        for (Blob b : blobs) {
+          float distOut = dist(x, y, b.getCenter().x, b.getCenter().y);
+          sum += 10 * b.size()/distOut;
         }
-        pg.pixels[x+y*width] = color(sum % 255,255,255);
+        pg.pixels[x+y*width] = color(sum % 255, 255, 255);
+      } 
+
+      else {
+        pg.pixels[x+y*width] = color(0, 0, 0);
       }
     }
   }
 
 
   for (int i = currentBlobs.size()-1; i >= 0; i--) {
-    if (currentBlobs.get(i).size()<500) {
+    if (currentBlobs.get(i).size()<1500) {
       currentBlobs.remove(i);
     }
   }
@@ -104,10 +112,12 @@ pg.beginDraw();
       blobCounter++;
     }
   } else if (blobs.size() <= currentBlobs.size()) {
+    
     for (Blob b : blobs) {
-      b = new Blob(0.0,0.0);
+      //b = new Blob(0.0,0.0);
       float recordD = 1000;
       Blob matched = null;
+      
       for (Blob cb : currentBlobs) {
         PVector centerB = b.getCenter();
         PVector centerCB = cb.getCenter();
@@ -116,9 +126,10 @@ pg.beginDraw();
           recordD=d;
           matched = cb;
         }
-      }
+      }if(matched != null){
       matched.taken = true;
       b.become(matched);
+      }
     }
 
     for (Blob b : currentBlobs) {
@@ -152,21 +163,32 @@ pg.beginDraw();
     for (int i = blobs.size()-1; i >= 0; i--) {
       Blob b = blobs.get(i);
       if (!b.taken) {
-        blobs.remove(i);
+        if (b.checkLife()) {
+          blobs.remove(i);
+        }
       }
     }
   }
 
-  //for (Blob b : blobs) {
-  //  b.show();
-  //}
+
+
 
   pg.updatePixels();
-  
+
   pg.endDraw();
-  
+
   image(pg, 0, 0);
   
+  for (Blob b : blobs) {
+    b.show();
+  }
+
+  textAlign(CENTER);
+  fill(140);
+  textSize(24);
+  text(currentBlobs.size()+"currentblobs", width-10, 40);
+  text(blobs.size()+"blobs", width-10, 80);
+  text(blobCounter+ "nr", 20, 20);
 }
 
 //blobs.clear();
